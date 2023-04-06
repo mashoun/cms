@@ -279,22 +279,7 @@ const dashboardPage = {
                   </div>
                 </div>
 
-                <div class="tab-pane fade pt-3" id="profile-blogs">
-                  
-                  <!-- <h6 class="text-secondary fs-6">Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis, assumenda!</h6> -->
-                  <div class="row g-3">
-
-                    <div class="col-12 col-lg-3 ">
-                      <div class="d-flex flex-column gap-2 p-2 shadow-sm">
-                        <img src="https://picsum.photos/1920/1080" alt="slide" class="img-fluid rounded shadow-sm" width="100">
-                        <h6 class="text-secondary fs-6">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eligendi, quibusdam!...</h6>
-                        <button class="btn btn-sm btn-outline-danger">Remove Blog</button>
-                      </div>
-                    </div>
-
-                  </div>
-
-                </div>
+                <div class="tab-pane fade pt-3" id="profile-blogs"><edit-blog></edit-blog></div>
 
                 <div class="tab-pane fade pt-3" id="profile-exp">
                   
@@ -1114,14 +1099,9 @@ const app = Vue.createApp({
       API: 'https://script.google.com/macros/s/AKfycbwEm8d0GkrsYtKGwIPfkxKzophR4sJrMS2govxvNVXPxzrlMGtDu0xi3AvNrqI0NLQQvw/exec',
       username: '',
       password: '',
-      isLogedIn: false,
+      isLogedIn: true,
       loginSpinner: false,
       github: '',
-      // to be moved to the dashboard comp
-      recentComments: '',
-      allBlogs: '',
-      selectedBlog: '',
-      filteredBlogs: []
 
     }
   },
@@ -1195,6 +1175,74 @@ const app = Vue.createApp({
 
 
     },
+  },
+  mounted() {
+    this.getRecentComments()
+    // this.getBlogs()
+  }
+})
+
+const editBlog = {
+  template:
+    /*html */
+    ` 
+  <div class="row g-3 p-3">
+    <div class="col-12">
+      <div class="input-group">
+        <select class="form-select" id="inputGroupSelect04" aria-label="Example select with button addon">
+          <option selected>Choose...</option>
+          <option value="1">One</option>
+          <option value="2">Two</option>
+          <option value="3">Three</option>
+        </select>
+        <button class="btn btn-outline-secondary" type="button">Remove Blog</button>
+      </div>
+    </div>
+  </div>
+  <div class="row g-3 mt-3 p-3">
+
+    <div class="col-12 col-lg-4 p-2 d-flex flex-column gap-2 shadow rounded position-relative">
+      <time class="fs-xsmall">22 hrs ago</time>
+      <strong class="border-start border-4 border-warning ps-2 text-fade">Lorem ipsum dolor sit amet consectetur adipisicing elit.</strong>
+      <div class="text-primary pop d-flex align-items-center"><i class="bi bi-at fs-5"></i><span class="m-0">Mahmoud</span></div>
+      <small class="text-secondary arb ps-3">Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias ipsa, officia quo quia molestiae enim illum. Dolores quae atque laboriosam?</small>
+      <i data-bs-toggle="modal" data-bs-target="#exampleModal" class="bi bi-reply-fill position-absolute top-0 start-100 translate-middle fs-3 point text-secondary"></i>
+
+      <!-- Modal -->
+      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Reply to @Mahmoud</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <textarea class="form-control" row="7"></textarea>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary">Accept</button>
+              <button type="button" class="btn btn-outline-secondary">Reject</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+  </div>
+  
+  `,
+  data() {
+    return {
+      // to be moved to the dashboard comp
+      recentComments: '',
+      allBlogs: '',
+      selectedBlog: '',
+      filteredBlogs: []
+    }
+  },
+  props:['API','github','username','password'],
+  methods: {
+
     async getRecentComments() {
 
       var api = this.API
@@ -1264,7 +1312,7 @@ const app = Vue.createApp({
           sha: sha
         }
       };
-    
+
       const res = await axios(config);
       console.log(res.data);
       return res.data;
@@ -1279,43 +1327,39 @@ const app = Vue.createApp({
           'Accept': 'application/vnd.github.v3+json'
         }
       };
-    
+
       const res = await axios(config);
       console.log(res.data);
       return res.data.sha;
     },
-    
-    
     async removeBlog() {
       var dBlog = this.allBlogs.filter(b => {
         return b.title == this.selectedBlog
       })[0]
 
-    
+
 
       // delete from client side
       this.allBlogs = this.allBlogs.filter(b => {
         return b.title != this.selectedBlog
       })
       this.selectedBlog = ''
-      
+
       // delete from github
-      
-      var path = dBlog.url.replace('https://mashoun.github.io/app/','')
+
+      var path = dBlog.url.replace('https://mashoun.github.io/app/', '')
       console.log(path)
 
       const sha = await this.getFileSha(this.github.token, this.github.username, this.github.repoName, path);
-    
+
       await this.deleteFile(this.github.token, this.github.username, this.github.repoName, path, 'CRM Delete File', 'main', sha)
       // delete from sheets - only strike through
 
     }
-  },
-  mounted() {
-    this.getRecentComments()
-    // this.getBlogs()
   }
-})
+}
+
+app.component('edit-blog', editBlog)
 
 app.use(router)
 app.mount("#app")
