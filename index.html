@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>@Mashoun Dashboard</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link
+    href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+    rel="stylesheet">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="assets/css/style.css" rel="stylesheet">
+  <link href="assets/css/animations.css" rel="stylesheet">
+
+  <!-- Swiper css -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+
+  <!-- Day js -->
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.6/dayjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.6/plugin/relativeTime.min.js"></script>
+  <!-- VUE JS & Router-->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="https://unpkg.com/vue-router@4"></script>
+  <script src="https://unpkg.com/@grammarly/editor-sdk?clientId=client_8HqGf8c32GzkCc52Lw3Ayo"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+
+</head>
+
+<body id="app">
+
+
+  <!-- Login section -->
+  <section v-if="!isLogedIn" class="w-100 h-100 bg-abyad position-fixed top-0 start-0" style="z-index: 1000;">
+
+    <div class="container my-5">
+      <div class="row justify-content-center p-3">
+        <section
+          class="col-12 col-md-8 col-lg-5 shadow-sm px-3 py-4 bg-light rounded d-flex flex-column gap-2 align-items-center">
+          <!-- <span class="material-symbols-outlined text-gradient display-5">
+                      terminal
+                  </span> -->
+          <img :src="PIC" alt="logo" width="70" height="70" class="img-fluid rounded-pill skeleton">
+          <h6 class="pop fs-4 text-secondary text-center"><strong>Mahmoud Mashoun</strong></h6>
+          <div class="w-100 d-flex flex-column gap-2 pop mt-3">
+            <div class="form-floating">
+              <input v-model="username" type="email" class="form-control" id="username" @keyup.enter="focus('password')"
+                placeholder="name@example.com">
+              <label for="username">Username</label>
+            </div>
+            <div class="form-floating">
+              <input v-model="password" @keyup.enter="loginPlease" type="password" class="form-control" id="password"
+                placeholder="Password">
+              <label for="password">Password</label>
+            </div>
+            <button class="btn btn-primary ls-1 w-100" @click="login">
+              <span v-if="loginSpinner" class="spinner-grow text-light spinner-grow-sm"></span>
+              <span v-else>Login</span>
+            </button>
+            <small class="fs-xsmall text-secondary pop text-center mt-2">Access your account and start
+              exploring !</small>
+          </div>
+        </section>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="header fixed-top d-flex align-items-center justify-content-between pe-3">
+
+    <div class="d-flex align-items-center justify-content-between gap-2">
+      <i class="bi bi-list toggle-sidebar-btn"></i>
+      <a href="index.html" class="logo d-flex align-items-center">
+        <!-- <img src="https://drive.google.com/uc?export=view&id=1carhdDO1t8HQlqGYBC9ad57n2WQamfaa" alt=""> -->
+        <span class=" d-lg-block"> {{title}} </span>
+      </a>
+    </div><!-- End Logo -->
+
+    <div>
+      <i class="bi bi-bell fs-4 text-danger" data-bs-toggle="modal" data-bs-target="#notificationsModal"></i>
+    </div>
+
+
+  </header><!-- End Header -->
+
+
+  <!-- ======= Sidebar ======= -->
+  <aside id="sidebar" class="sidebar">
+
+    <ul class="sidebar-nav" id="sidebar-nav">
+
+      <li class="nav-item">
+        <router-link to="/dashboard" class="nav-link ">
+          <i class="bi bi-grid fs-5"></i>
+          <span>Dashboard</span>
+        </router-link>
+      </li><!-- End Dashboard Nav -->
+
+      <li class="nav-item">
+        <router-link to="/analytics" class="nav-link ">
+          <i class="bi bi-pie-chart fs-5"></i>
+          <span>Analytics</span>
+        </router-link>
+      </li>
+
+      <li class="nav-item">
+        <router-link to="/createBlog" class="nav-link ">
+          <i class="bi bi-file-richtext fs-5"></i>
+          <span>Create Blog</span>
+        </router-link>
+      </li>
+
+      <li class="nav-item">
+        <router-link to="addExp" class="nav-link ">
+          <i class="bi bi-briefcase fs-5"></i>
+          <span>New Experience</span>
+        </router-link>
+      </li>
+
+
+    </ul>
+
+  </aside><!-- End Sidebar-->
+
+  <main id="main" class="main">
+    <div class="pagetitle d-none">
+      <h1>Dashboard</h1>
+      <small class="text-secondary">Lorem ipsum dolor sit amet consectetur adipisicing elit. Necessitatibus,
+        blanditiis.</small>
+    </div><!-- End Page Title -->
+
+    <router-view :github="github" :username="username" :password="password" :api="API"></router-view>
+
+
+  </main><!-- End #main -->
+
+  <!-- Modals -->
+  <div class="modal fade" id="notificationsModal" tabindex="-10" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-6" id="exampleModalLabel">You have 4 notifications</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="p-2">
+            <span class="fs-xsmall pop">22 hrs ago</span>
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-camera-reels text-info"></i>
+              <small class="pop text-secondary">mokhtar.ayoubi@live.com want to meet !</small>
+            </div>
+          </div>
+          <hr>
+          <div class="p-2">
+            <span class="fs-xsmall pop">22 hrs ago</span>
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-star text-danger"></i>
+              <small class="pop text-secondary">mohamad.ayoubi@gmail.com have subscribed to your newsLetter !</small>
+            </div>
+          </div>
+          <hr>
+          <div class="p-2">
+            <span class="fs-xsmall pop">22 hrs ago</span>
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-chat-square-dots text-warning"></i>
+              <small class="pop text-secondary">yarahoro7@gmail.com commented on a blog !</small>
+            </div>
+          </div>
+
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Clear</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a> -->
+
+  <!-- Vendor JS Files -->
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="assets/js/vue.js"></script>
+  <script src="assets/js/main.js"></script>
+
+</body>
+
+</html>
